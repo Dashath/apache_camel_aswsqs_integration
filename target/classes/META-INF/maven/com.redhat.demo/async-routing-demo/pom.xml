@@ -77,6 +77,10 @@
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-swagger-java-starter</artifactId>
 		</dependency>
+		<dependency>
+  <groupId>org.apache.camel.springboot</groupId>
+  <artifactId>camel-directvm-starter</artifactId>
+  </dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime -->
 		<dependency>

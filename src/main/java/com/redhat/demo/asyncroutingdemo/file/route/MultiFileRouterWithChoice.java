@@ -97,12 +97,25 @@ public class MultiFileRouterWithChoice extends RouteBuilder{
 		from("direct:insert").log("Processing message: ${body}").setHeader("message", body()).process(new Processor() {
 			public void process(Exchange xchg) throws Exception {
 				String body = xchg.getIn().getBody(String.class);
+				
 				Map<String, Object> answer = new HashMap<String, Object>();
-				answer.put("imdcode", body);				 
+				answer.put("imdcode", parseImdCode(body));				 
 				xchg.getIn().setBody(answer);
 			}
 		}).to("sql:INSERT INTO policy(imdcode) VALUES (:#imdcode)");
 		
+	}
+	
+	public String parseImdCode(String body) {
+		
+		if(body.indexOf("imdCode")<0)
+			return "IMD00000000000";
+		
+		String imdCode = body.substring(body.indexOf("imdCode")+10);
+		System.out.println("IMD Code Return   "+ imdCode);
+		imdCode=imdCode.substring(0,imdCode.indexOf("\"")-1);
+		System.out.println("IMD Code Return1   "+ imdCode);
+		return imdCode;
 	}
 
 }

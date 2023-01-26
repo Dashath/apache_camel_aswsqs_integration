@@ -3,13 +3,12 @@ package com.redhat.demo.asyncroutingdemo;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.aws2.sqs.Sqs2Constants;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 
-//@Component
+@Component
 public class SimpleRouteBuilder extends RouteBuilder {
 
     private final Environment env;
@@ -21,23 +20,9 @@ public class SimpleRouteBuilder extends RouteBuilder {
     @Override
     public void configure() throws Exception {
     	
-    //	BasicDataSource basic = new BasicDataSource();
-    //	basic.setDriverClassName("cdata.jdbc.mysql.MySQLDriver");
-    	//basic.setUrl("jdbc:mysql:User=myUser;Password=myPassword;Database=NorthWind;Server=myServer;Port=3306;");
+    
     	
-//    	AWSCredentials awsCredentials = new BasicAWSCredentials("myAccessKey", "mySecretKey");
-//
-//    	ClientConfiguration clientConfiguration = new ClientConfiguration();
-//    	clientConfiguration.setProxyHost("http://myProxyHost");
-//    	clientConfiguration.setProxyPort(8080);
-//
-//    	AmazonSQS client = new AmazonSQSClient(awsCredentials, clientConfiguration);
-//
-//    	registry.bind("client", client);
-//    	from("aws-sqs://MyQueue?amazonSQSClient=#client&delay=5000&maxMessagesPerPoll=5")
-//    	.to("mock:result");
-    	
-        onException(Exception.class).process(new Processor() {
+        onException(Exception.class).log("$body").process(new Processor() {
 
             public void process(Exchange exchange) throws Exception {
                 System.out.println("--- EXCEPTION ---");
@@ -69,15 +54,17 @@ public class SimpleRouteBuilder extends RouteBuilder {
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
                 .to("https://lgi-backend-git-lgi-poc-quote.apps.cluster-fzgbp.fzgbp.sandbox1096.opentlc.com/Motor?bridgeEndpoint=true")
                 .convertBodyTo(String.class)
-                .to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGIC3FJFQPXQ)&secretKey=RAW(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)&region=ap-south-1")
+               // .to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGIC3FJFQPXQ)&secretKey=RAW(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)&region=ap-south-1")
+               .to("direct:multicast-parraller-process")
             .otherwise()
                 .convertBodyTo(String.class)
                 .to("log:OW-outgoing-request")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
                 .to("https://lgi-backend-git-lgi-poc-quote.apps.cluster-fzgbp.fzgbp.sandbox1096.opentlc.com/Motor?bridgeEndpoint=true")
-                .convertBodyTo(String.class)
-                .to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGIC3FJFQPXQ)&secretKey=RAW(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)&region=ap-south-1");
+                .convertBodyTo(String.class);
+                //.to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGIC3FJFQPXQ)&secretKey=RAW(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)&region=ap-south-1");
+               // .to("direct-vm:multicast-parraller-process");
         
         
 //        from("direct:start")
