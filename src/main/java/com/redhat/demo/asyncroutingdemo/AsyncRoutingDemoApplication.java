@@ -14,10 +14,4 @@ public class AsyncRoutingDemoApplication {
 		SpringApplication.run(AsyncRoutingDemoApplication.class, args);
 	}
 
-	// @Bean
-	// public ServletRegistrationBean camelServletRegistrationBean() {
-	//   ServletRegistrationBean registration = new ServletRegistrationBean(new CamelHttpTransportServlet(), "/camel/*");
-	//   registration.setName("CamelServlet2");
-	//   return registration;
-	// }
-}
+ }

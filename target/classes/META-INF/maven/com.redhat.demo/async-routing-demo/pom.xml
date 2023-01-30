@@ -152,6 +152,11 @@
     <artifactId>camel-aws2-sqs</artifactId>
     <version>3.16.0</version>
 </dependency>
+<dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-aws2-sns</artifactId>
+    <version>3.16.0</version>
+</dependency>
 <!-- https://mvnrepository.com/artifact/org.apache.camel/camel-sql -->
 <dependency>
     <groupId>org.apache.camel</groupId>
@@ -174,6 +179,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
+		
+		<dependency>
+  <groupId>org.apache.camel.springboot</groupId>
+  <artifactId>camel-aws2-sns-starter</artifactId>
+  <version>3.16.0</version>
+  <!-- use the same version as your Camel core version -->
+</dependency>
 		
 <dependency>
     <groupId>org.apache.camel.springboot</groupId>

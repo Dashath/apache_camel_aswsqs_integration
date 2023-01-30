@@ -22,7 +22,12 @@ public class SimpleRouteBuilder extends RouteBuilder {
     	
     
     	
-        onException(Exception.class).log("$body").process(new Processor() {
+        onException(Exception.class)
+        //.handled(true)
+      //  .markRollbackOnly()
+        .useOriginalMessage()
+        .logStackTrace(true)
+        .process(new Processor() {
 
             public void process(Exchange exchange) throws Exception {
                 System.out.println("--- EXCEPTION ---");
@@ -44,54 +49,33 @@ public class SimpleRouteBuilder extends RouteBuilder {
         
 
         from("direct:async-quote")
-       // .wireTap("direct:wiretap-quotelo-req")
+       // .wireTap("direct:wiretap-quotelo-req")//
        .choice()
             .when(header("client").isNotNull())
+           // .log("${body}")
                 .toD("atlasmap:maps/${header.client}.adm")
+                .log("${body}")
                 .convertBodyTo(String.class)
+                .log("${body}")
                 .to("log:CF-outgoing-request")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                .to("https://lgi-backend-git-lgi-poc-quote.apps.cluster-fzgbp.fzgbp.sandbox1096.opentlc.com/Motor?bridgeEndpoint=true")
-                .convertBodyTo(String.class)
-               // .to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGIC3FJFQPXQ)&secretKey=RAW(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)&region=ap-south-1")
+               .to("https://lgi-backend-git-lgi-poc-quote.apps.cluster-fzgbp.fzgbp.sandbox1096.opentlc.com/Motor?bridgeEndpoint=true")
+                .convertBodyTo(String.class)              
                .to("direct:multicast-parraller-process")
             .otherwise()
                 .convertBodyTo(String.class)
                 .to("log:OW-outgoing-request")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                .to("https://lgi-backend-git-lgi-poc-quote.apps.cluster-fzgbp.fzgbp.sandbox1096.opentlc.com/Motor?bridgeEndpoint=true")
-                .convertBodyTo(String.class);
-                //.to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGIC3FJFQPXQ)&secretKey=RAW(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)&region=ap-south-1");
-               // .to("direct-vm:multicast-parraller-process");
-        
-        
-//        from("direct:start")
-//
-//         .setHeader(Sqs2Constants.SQS_OPERATION, constant("purgeQueue"))
-//
-//        .setHeader(Sqs2Constants.SQS_OPERATION, constant("listQueues"))
-//
-//        .to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGICW7MUHCER)&secretKey=RAW(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)&region=ap-south-1");
+               .to("https://lgi-backend-git-lgi-poc-quote.apps.cluster-fzgbp.fzgbp.sandbox1096.opentlc.com/Motor?bridgeEndpoint=true")
+                .convertBodyTo(String.class)
+                .to("direct:multicast-parraller-process");                
+ 
 
+    		}
 
-
- }
-
-//        from("direct:HttpFailed")
-//        .wireTap("direct:wiretap-log")
-//        .to("language:constant:Bad Request");
-//
-//        from("direct:wiretap-log")
-//        .convertBodyTo(String.class)
-//        .to("log: ---- EXCEPTION ----");
-        
-//        from("direct:start")
-//        .setBody(constant("Camel rocks!"))
-//        .to("aws2-sqs://camelqueue?accessKey=RAW(AKIAUFWMQGIC3FJFQPXQ)&secretKey=RAW(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)&region=ap-south-1");
-
-
+ 
     
 }
 

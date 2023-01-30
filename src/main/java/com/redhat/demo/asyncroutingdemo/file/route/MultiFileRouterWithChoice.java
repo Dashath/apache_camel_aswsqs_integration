@@ -75,10 +75,12 @@ public class MultiFileRouterWithChoice extends RouteBuilder{
 		
 		
 		from("direct:multicast-parraller-process").multicast().parallelProcessing()
-	      .to("direct:to_aws-sqs","direct:insert")
+	      .to("direct:to_aws-sqs","direct:insert","direct:to_aws-sns")
 	      .log("${body}");
 		
-		
+		from("direct:to_aws-sns")
+	      .to("aws2-sns://myContactForm?accessKey=RAW(AKIAUFWMQGICW7MUHCER)&secretKey=RAW(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)&region=ap-south-1")
+	      .log("${body}");
 		
 		from("direct:select").to("sql:select * from policy").process(new Processor() {
 			public void process(Exchange xchg) throws Exception {
